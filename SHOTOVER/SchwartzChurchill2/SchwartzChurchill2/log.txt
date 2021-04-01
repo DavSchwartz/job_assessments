@@ -1,0 +1,16 @@
+--- Churchill Navigation Point Search Challenge ---
+Point count  : 500
+Query count  : 1000
+Result count : 20
+Random seed  : FB8DAF75-F105C125-FB8DAF75-E1D687F3-D04540A5
+
+Loading algorithms:
+Loading C:\Users\Dave\Documents\repos\SchwartzChurchill2\x64\Debug\SchwartzChurchill2.dll... Success.
+1 algorithms loaded.
+
+Preparing 500 random points...done (0.0330ms).
+Preparing 1000 random queries...done (0.0230ms).
+
+Testing algorithm #0 (SchwartzChurchill2.dll):
+Robustness check...done.
+Loading points...

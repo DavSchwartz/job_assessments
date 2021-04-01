@@ -1,0 +1,16 @@
+--- Churchill Navigation Point Search Challenge ---
+Point count  : 10000000
+Query count  : 1000
+Result count : 20
+Random seed  : 6CDEDD34-6656B364-6CDEDD34-7685F5B2-471632E4
+
+Loading algorithms:
+Loading C:\Users\Dave\Documents\repos\SchwartzChurchill3\x64\Debug\SchwartzChurchill3.dll... Success.
+1 algorithms loaded.
+
+Preparing 10000000 random points...done (535.8480ms).
+Preparing 1000 random queries...done (0.0270ms).
+
+Testing algorithm #0 (SchwartzChurchill3.dll):
+Robustness check...done.
+Loading points...

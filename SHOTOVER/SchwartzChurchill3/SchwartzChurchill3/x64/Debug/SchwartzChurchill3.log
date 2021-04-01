@@ -1,0 +1,19 @@
+﻿  SchwartzChurchill.cpp
+C:\Users\Dave\Documents\repos\SchwartzChurchill3\SchwartzChurchill3\SchwartzChurchill.cpp(38,54): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\Dave\Documents\repos\SchwartzChurchill3\SchwartzChurchill3\SchwartzChurchill.cpp(98,1): warning C4273: 'create': inconsistent dll linkage
+C:\Users\Dave\Documents\repos\SchwartzChurchill3\SchwartzChurchill3\SchwartzChurchill.h(83,50): message : see previous definition of 'create'
+C:\Users\Dave\Documents\repos\SchwartzChurchill3\SchwartzChurchill3\SchwartzChurchill.cpp(116,47): warning C4244: 'argument': conversion from 'long double' to 'float', possible loss of data
+C:\Users\Dave\Documents\repos\SchwartzChurchill3\SchwartzChurchill3\SchwartzChurchill.cpp(116,25): warning C4244: 'argument': conversion from 'long double' to 'float', possible loss of data
+C:\Users\Dave\Documents\repos\SchwartzChurchill3\SchwartzChurchill3\SchwartzChurchill.cpp(128,59): warning C4244: 'argument': conversion from 'long double' to 'float', possible loss of data
+C:\Users\Dave\Documents\repos\SchwartzChurchill3\SchwartzChurchill3\SchwartzChurchill.cpp(128,32): warning C4244: 'argument': conversion from 'long double' to 'float', possible loss of data
+C:\Users\Dave\Documents\repos\SchwartzChurchill3\SchwartzChurchill3\SchwartzChurchill.cpp(132,17): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+C:\Users\Dave\Documents\repos\SchwartzChurchill3\SchwartzChurchill3\SchwartzChurchill.cpp(134,47): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Dave\Documents\repos\SchwartzChurchill3\SchwartzChurchill3\SchwartzChurchill.cpp(135,47): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Dave\Documents\repos\SchwartzChurchill3\SchwartzChurchill3\SchwartzChurchill.cpp(137,118): warning C4244: 'argument': conversion from 'double' to 'const unsigned __int64', possible loss of data
+C:\Users\Dave\Documents\repos\SchwartzChurchill3\SchwartzChurchill3\SchwartzChurchill.cpp(137,63): warning C4244: 'argument': conversion from 'double' to 'const unsigned __int64', possible loss of data
+C:\Users\Dave\Documents\repos\SchwartzChurchill3\SchwartzChurchill3\SchwartzChurchill.cpp(152,1): warning C4273: 'search': inconsistent dll linkage
+C:\Users\Dave\Documents\repos\SchwartzChurchill3\SchwartzChurchill3\SchwartzChurchill.h(88,42): message : see previous definition of 'search'
+C:\Users\Dave\Documents\repos\SchwartzChurchill3\SchwartzChurchill3\SchwartzChurchill.cpp(185,1): warning C4273: 'destroy': inconsistent dll linkage
+C:\Users\Dave\Documents\repos\SchwartzChurchill3\SchwartzChurchill3\SchwartzChurchill.h(91,50): message : see previous definition of 'destroy'
+     Creating library C:\Users\Dave\Documents\repos\SchwartzChurchill3\x64\Debug\SchwartzChurchill3.lib and object C:\Users\Dave\Documents\repos\SchwartzChurchill3\x64\Debug\SchwartzChurchill3.exp
+  SchwartzChurchill3.vcxproj -> C:\Users\Dave\Documents\repos\SchwartzChurchill3\x64\Debug\SchwartzChurchill3.dll
