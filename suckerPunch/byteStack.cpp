@@ -6,25 +6,50 @@ void on_out_of_memory();
 void on_illegal_operation();
 void init();
 
-#define POINTER_SPACING 9
-#define DATA_LEN 2048
-#define VALID_BIT_LENGTH 228
-#define VALID_BIT_INDEX 1818
-#define META_DATA_LEN 230
-#define INIT_BIT_INDEX 2046
-#define AVAIL_DATA_POINTER_INDEX 2047
+#define CHUNK_LEN 8
+#define TOTAL_LEN 2048
+#define DYNAMIC_MEMORY_INDEX 0
+#define DYNAMIC_MEMORY_LEN 1815
+#define DATA_INDEX 0
+#define DATA_LEN 1624
+#define QUEUE_INDICES_INDEX 1624
+#define QUEUE_INDICES_LEN 192
+#define QUEUE_INDEX_LEN 3
+#define VALID_BITS_INDEX 1816
+#define VALID_BITS_LEN 227
+#define AVAIL_QUEUE_INDICES_INDEX 2043
+#define AVAIL_QUEUE_INDICES_LEN 2
+#define AVAIL_CHUNK_INDICES_INDEX 2035
+#define AVAIL_CHUNK_INDICES_LEN 2
+#define INIT_INDEX 2048
+#define INIT_LEN 1
 
 /*
 
 {} = number of occurances
 
-data: [(data_entry{8}, uint8_pointer){202}, valid_bits{228}, unused, init_bit, avail_data_pointer]
+data: [dynamic_memory{1}: 1815 byte, avail_queue_indices{1}: 2 bytes, avail_chunk_indices{1}: 2 bytes, init{1}: 1 byte]
 
-data_entry: unsigned char
-uint8_pointer: data index of next data_entry
-valid_bits: memory availability indicator; 0: available; 1: in use
-init_bit: initialization indicator: 0: uninitialized; 1: initialized
-avail_data_pointer: data index available memory
+dynamic_memory = data_chunk{203}: 1624 bytes, queue_indices{64}: 192 bytes
+
+data_chunk length must be divisible by 8
+data_chunk = data_entry{7}: 7 bytes, chunk_index{1}: 1 byte
+data_entry = uint8 data entry: 1 byte
+chunk_pointer = uint8 index of next data_chunk: 1 byte
+
+queue_indices length must be divisible by 3
+queue_indices = queue_start_index{1}: 1.5 bytes, queue_end_index{1}: 1.5 bytes
+queue_start_index = uint12 index of start of queue: 1.5 bytes
+queue_end_index = uint12 index of end of queue: 1.5 bytes
+
+valid_bits = boolean indicator of memory usage: 1 bit; 0: available; 1: in use
+
+avail_queue_indices = prev_avail_index{1}: 1 byte, next_avail_index{1}: 1 byte
+avail_chunk_indices = prev_avail_index{1}: 1 byte, next_avail_index{1}: 1 byte
+prev_avail_index = uint8 index of available memory, pointing to next_avail_index: 1 byte
+next_avail_index = uint8 index of available memory: 1 byte
+
+init: uint8 initialization indicator: 0: uninitialized; 1: initialized
 
 */
 static unsigned char data[DATA_LEN] = {0};
@@ -33,6 +58,7 @@ static unsigned char data[DATA_LEN] = {0};
 unsigned char * create_queue()
 {
 	init();
+
 }
 
 void destroy_queue(unsigned char * q)
@@ -63,20 +89,29 @@ void on_illegal_operation()
 void init()
 {
 	// init bit not set
-	if (data[INIT_BIT_INDEX] == 0)
+	if (data[INIT_INDEX] == 0)
 	{
-		for (int i = 0; i < (DATA_LEN - META_DATA_LEN); i++)
+		// Make available chunks point to next available chunk
+		for (int i = (CHUNK_LEN - 1); i < (DATA_LEN - 1); i += CHUNK_LEN)
 		{
-			// Make pointers point to next available data
-			if ((i % POINTER_SPACING) == (POINTER_SPACING - 1))
-			{
-				data[i] = i+1;
-			}
+			data[DATA_INDEX + i] = (int)((i + 1) / CHUNK_LEN);
 		}
+		data[DATA_INDEX + DATA_LEN - 1] = 0;
 
-		// point to first available data index
-		data[AVAIL_DATA_POINTER_INDEX] = 0;
+		// Make available queue index locations point to next available available locations
+		for (int i = (QUEUE_INDEX_LEN - 1); i < (QUEUE_INDICES_LEN - QUEUE_INDEX_LEN); i += QUEUE_INDEX_LEN)
+		{
+			data[QUEUE_INDICES_INDEX + i] = i + QUEUE_INDEX_LEN;
+		}
+		data[QUEUE_INDICES_INDEX + QUEUE_INDICES_LEN - QUEUE_INDEX_LEN] = 0;
+
+		// point to last and first available index
+		data[AVAIL_CHUNK_INDICES_INDEX] = DATA_INDEX + DATA_LEN - 1;
+		data[AVAIL_CHUNK_INDICES_INDEX + 1] = DATA_INDEX;
+		data[AVAIL_QUEUE_INDICES_INDEX] = QUEUE_INDICES_INDEX + QUEUE_INDICES_LEN - 1;
+		data[AVAIL_QUEUE_INDICES_INDEX + 1] = QUEUE_INDICES_INDEX;
+
 		// set init bit
-		data[INIT_BIT_INDEX] = 1;
+		data[INIT_INDEX] = 1;
 	}
 }
