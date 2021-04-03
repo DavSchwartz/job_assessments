@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <time.h>
-#include <unistd.h>
 #include <string.h>
 #include <winsock2.h>
 
@@ -253,7 +252,7 @@ void invalid(struct Context* context)
 // initialization of state machine
 void startup(struct Context* context)
 {
-    sleep(10);
+    Sleep(10000);
     context->state = Ready;
 }
 
@@ -360,27 +359,35 @@ void parseArgs(int argc, char **argv, char(* address)[MAX_STRING_LEN], int* port
 {
     strcpy(*address, ADDRESS);
     *port = PORT;
-    int c;
-    while ((c = getopt(argc, argv, "a:p:h")) != -1)
+
+    for (int i = 0; i < argc; i++)
     {
-        switch(c)
+        if (!strcmp(argv[i], "-a"))
         {
-            case 'h':
-                printf("\
+            // next argument exists and it's not another option
+            if (((i + 1) < argc) && (argv[i + 1][0] != '-'))
+            {
+                strcpy(*address, argv[i + 1]);
+            }
+        }
+        else if (!strcmp(argv[i], "-p"))
+        {
+            // next argument exists and it's not another option
+            if (((i + 1) < argc) && (argv[i + 1][0] != '-'))
+            {
+                *port = atoi(argv[i + 1]);
+            }
+        }
+        else if (!strcmp(argv[i], "-h"))
+        {
+            printf("\
 usage: fsw.exe [-h] [-a ADDRESS] [-p PORT]\n\
 optional arguments:\n\
 -h, show this help message and exit\n\
 -a ADDRESS, IP address to serve on\n\
 -p PORT, Port to serve on\n\
-                ");
-                exit(0);
-                break;
-            case 'a':
-                strcpy(*address, optarg);
-                break;
-            case 'p':
-                *port = atoi(optarg);
-                break;
+            ");
+            exit(0);
         }
     }
 }
