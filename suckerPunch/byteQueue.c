@@ -407,7 +407,7 @@ void init()
 	{
 		data[queueIndex(i)] = i + 1;
 	}
-	data[queueIndex(NUM_CHUNKS - 1)] = 0;
+	data[queueIndex(NUM_QUEUES - 1)] = 0;
 
 	data[AVAIL_QUEUE_NUM_INDEX] = 0;
 	data[AVAIL_CHUNK_NUM_INDEX] = 0;
