@@ -1,0 +1,5 @@
+This problem can either be solved with sequential arrays or linked lists.
+
+sequential arrays can have good performance on average, but have very poor worst case scenario performance when entire arrays must be moved.
+
+Using linked lists, we could give each data entry a index/pointer, but to access every byte we would need an 11 bit number. This index would take a minimum of 1.5 bytes if it shared a byte with another index. This would severly our limit memory usage. The solution is to divide up the memory into less than 256 chunk, so that the chunks can be accessed with one byte. To handle unallocated chunks, we can have them all point to each other in a linked list, and simply store an index to an arbitrary free chunk. This same allocation method can be used for queue meta data as well.
