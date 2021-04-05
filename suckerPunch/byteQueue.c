@@ -408,19 +408,6 @@ unsigned short queueIndex(unsigned char queue_num)
 	return ALL_QUEUES_INDEX + (queue_num * QUEUE_LEN);
 }
 
-void overlap_chunks(unsigned char queue_num)
-{
-	unsigned short start_index = queueStartIndex(queue_num);
-	unsigned short end_index = queueEndIndex(queue_num);
-
-	// if no data exists in queue
-	if ((start_index == INVALID_12) || (end_index == INVALID_12))
-	{
-		
-	}
-}
-
-
 void init()
 {
 	// Make chunks point to next available chunk
