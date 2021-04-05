@@ -46,13 +46,13 @@ int main(int argc, char **argv);
 
 {} = number of occurances
 
-data: [chunk{231}: 1848 bytes, queue{64}: 192 bytes, avail_queue_number: 1 bytes, avail_chunk_number: 1 bytes, init: 1 byte, unused: 5 bytes]
+data: [chunk{231}: 1848 bytes, queue{64}: 192 bytes, avail_queue_num: 1 bytes, avail_chunk_num: 1 bytes, init: 1 byte, unused: 5 bytes]
  
-When not in use, next_chunk_number is the number of the next unused chunk
+When not in use, next_chunk_num is the number of the next unused chunk
 Chunk number counted from zero
-chunk = entry{7}: 7 bytes, next_chunk_number{1}: 1 byte
+chunk = entry{7}: 7 bytes, next_chunk_num{1}: 1 byte
 entry = uint8 data entry: 1 byte
-next_chunk_number = uint8 chunk number containing subsequent data: 1 byte
+next_chunk_num = uint8 chunk number containing subsequent data: 1 byte
 
 When not in use, first byte of queue is the number of the next unused queue
 Queue number counted from zero
@@ -88,18 +88,22 @@ void destroy_queue(unsigned char * q)
 	unsigned char queue_num = queueNum(q - data);
 	unsigned short start_index = queueStartIndex(queue_num);
 	unsigned short end_index = queueEndIndex(queue_num);
-	unsigned char start_chunk_num = chunkNum(start_index);
-	unsigned char end_chunk_num = chunkNum(end_index);
-	unsigned char current_chunk_num = start_chunk_num;
 
-	// if free queue data
-	while (current_chunk_num != end_chunk_num)
+	// if queue contains data
+	if ((start_index != INVALID_12) && (end_index != INVALID_12))
 	{
-		unsigned char next_chunk_num = data[nextChunkNumIndex(current_chunk_num)];
-		freeChunk(current_chunk_num);
-		current_chunk_num = next_chunk_num;
+		unsigned char start_chunk_num = chunkNum(start_index);
+		unsigned char end_chunk_num = chunkNum(end_index);
+		unsigned char current_chunk_num = start_chunk_num;
+		// if free queue data
+		while ((current_chunk_num != end_chunk_num))
+		{
+			unsigned char next_chunk_num = data[nextChunkNumIndex(current_chunk_num)];
+			freeChunk(current_chunk_num);
+			current_chunk_num = next_chunk_num;
+		}
+		freeChunk(end_chunk_num);
 	}
-	freeChunk(end_chunk_num);
 	freeQueue(queue_num);
 }
 
@@ -118,18 +122,18 @@ void enqueue_byte(unsigned char * q, unsigned char b)
 	// if no data exists in queue
 	if ((start_index == INVALID_12) || (end_index == INVALID_12))
 	{
-		unsigned char new_chunk_number = allocChunk();
-		data[chunkIndex(new_chunk_number)] = b;
-		start_index = chunkIndex(new_chunk_number);
+		unsigned char new_chunk_num = allocChunk();
+		data[chunkIndex(new_chunk_num)] = b;
+		start_index = chunkIndex(new_chunk_num);
 		end_index = start_index + 1;
 	}
-	// if next index represents next_chunk_number
+	// if next index represents next_chunk_num
 	else if (end_index == nextChunkNumIndex(chunkNum(end_index)))
 	{
-		unsigned char new_chunk_number = allocChunk();
-		data[end_index] = new_chunk_number;
-		data[chunkIndex(new_chunk_number)] = b;
-		end_index = chunkIndex(new_chunk_number) + 1;
+		unsigned char new_chunk_num = allocChunk();
+		data[end_index] = new_chunk_num;
+		data[chunkIndex(new_chunk_num)] = b;
+		end_index = chunkIndex(new_chunk_num) + 1;
 	}
 	else
 	{
@@ -150,34 +154,30 @@ unsigned char dequeue_byte(unsigned char * q)
 	}
 
 	unsigned char queue_num = queueNum(q - data);
-
 	unsigned short start_index = queueStartIndex(queue_num);
 	unsigned short end_index = queueEndIndex(queue_num);
-	unsigned char out = data[start_index];
-	unsigned char start_chunk_num = chunkNum(start_index);
 
 	// if no data exists in queue
 	if ((start_index == INVALID_12) || (end_index == INVALID_12))
 	{
-		printf("DEQUEUE_BYTE FAILURE\n");
+		printf("DEQUEUE_BYTE FAILURE\n"); 
 		on_illegal_operation();
 	}
-	// if next index represents next_chunk_number
-	else if ((start_index + 1) == nextChunkNumIndex(start_chunk_num))
-	{
-		start_index = chunkIndex(data[start_index + 1]);
-		freeChunk(start_chunk_num);
-	}
-	else
-	{
-		start_index++;
-	}
 
+	unsigned char out = data[start_index];
+	start_index++;
 	// if queue is now empty
 	if (start_index == end_index)
 	{
 		start_index = INVALID_12;
 		end_index = INVALID_12;
+	}
+	// if next index represents next_chunk_num
+	else if (start_index == nextChunkNumIndex(chunkNum(start_index)))
+	{
+		unsigned char chunk_num = chunkNum(start_index);
+		start_index = chunkIndex(data[start_index]);
+		freeChunk(chunk_num);
 	}
 
 	setQueueStartIndex(queue_num, start_index);
@@ -288,18 +288,20 @@ void freeQueue(unsigned char queue_num)
 		*new_queue_next_num = new_queue_num;
 
 	}
-
-	unsigned char* avail_queue_next_num = &data[queueIndex(*avail_queue_num)];
-	// if avail queue points to itself
-	if (*avail_queue_num == *avail_queue_next_num)
-	{
-		*avail_queue_next_num = new_queue_num;
-		*new_queue_next_num = *avail_queue_num;
-	}
 	else
 	{
-		*new_queue_next_num = *avail_queue_next_num;
-		*avail_queue_next_num = new_queue_num;
+		unsigned char* avail_queue_next_num = &data[queueIndex(*avail_queue_num)];
+		// if avail queue points to itself
+		if (*avail_queue_num == *avail_queue_next_num)
+		{
+			*avail_queue_next_num = new_queue_num;
+			*new_queue_next_num = *avail_queue_num;
+		}
+		else
+		{
+			*new_queue_next_num = *avail_queue_next_num;
+			*avail_queue_next_num = new_queue_num;
+		}
 	}
 }
 
@@ -342,18 +344,19 @@ void freeChunk(unsigned char chunk_num)
 		*new_chunk_next_num = new_chunk_num;
 
 	}
-
-	unsigned char* avail_chunk_next_num = &data[nextChunkNumIndex(*avail_chunk_num)];
-	// if avail chunk points to itself
-	if (*avail_chunk_num == *avail_chunk_next_num)
-	{
-		*avail_chunk_next_num = new_chunk_num;
-		*new_chunk_next_num = *avail_chunk_num;
-	}
-	else
-	{
-		*new_chunk_next_num = *avail_chunk_next_num;
-		*avail_chunk_next_num = new_chunk_num;
+	else {
+		unsigned char* avail_chunk_next_num = &data[nextChunkNumIndex(*avail_chunk_num)];
+		// if avail chunk points to itself
+		if (*avail_chunk_num == *avail_chunk_next_num)
+		{
+			*avail_chunk_next_num = new_chunk_num;
+			*new_chunk_next_num = *avail_chunk_num;
+		}
+		else
+		{
+			*new_chunk_next_num = *avail_chunk_next_num;
+			*avail_chunk_next_num = new_chunk_num;
+		}
 	}
 }
 
@@ -369,7 +372,7 @@ unsigned char chunkNum(unsigned short index)
 	return floor((index - ALL_CHUNKS_INDEX) / CHUNK_LEN);
 }
 
-// return data index of the byte representing the next linked chunk num
+// return the data index of the byte representing this chunk's next_chunk_num
 unsigned short nextChunkNumIndex(unsigned char chunk_num)
 {
 	return chunkIndex(chunk_num) + (CHUNK_LEN - 1);
@@ -435,9 +438,33 @@ void init()
 
 int main(int argc, char **argv)
 {
+	int max_queues = 64;
+	int max_chunks = 21;
+	unsigned char* q[max_queues];
+	unsigned char great = 1;
+	for (int i = 0; i < max_queues; i++)
+	{
+		q[i] = create_queue();
+		for (int j = 0; j < max_chunks; j++)
+		{
+			enqueue_byte(q[i], j);
+		}
+	}
+
+	for (int i = 0; i < max_queues; i++)
+	{
+		for (int j = 0; j < max_chunks; j++)
+		{
+			unsigned char y = dequeue_byte(q[i]);
+			if (y != j && great) {great = 0;}
+		}
+		destroy_queue(q[i]);
+	}
+	if (great) {printf("MISSION ACCOMPLISHED\n");}
+
 	unsigned char* q0 = create_queue();
 	unsigned char x = 0;
-	unsigned char great = 1;
+	great = 1;
 	for (int i = 0; i < 219; i++)
 	{
 		enqueue_byte(q0, x);
@@ -454,7 +481,7 @@ int main(int argc, char **argv)
 	destroy_queue(q0);
 	printf("destroyed\n");
 
-	if (great) {printf("MISSION ACCOMPLISHED\n");}
+	if (great) {printf("MISSION ACCOMPLISHED (AGAIN)\n");}
 
 	/*
 	unsigned char* q0 = create_queue();
