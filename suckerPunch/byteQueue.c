@@ -81,7 +81,7 @@ void destroy_queue(unsigned char * q)
 {
 	if (data[INIT_INDEX] == 0)
 	{
-		printf("DESTROY_BYTE FAILURE\n");
+		printf("DESTROY_QUEUE FAILURE\n");
 		on_illegal_operation();
 	}
 
@@ -95,7 +95,7 @@ void destroy_queue(unsigned char * q)
 		unsigned char start_chunk_num = chunkNum(start_index);
 		unsigned char end_chunk_num = chunkNum(end_index);
 		unsigned char current_chunk_num = start_chunk_num;
-		// free queue data
+		// free chunk data
 		while ((current_chunk_num != end_chunk_num))
 		{
 			unsigned char next_chunk_num = data[nextChunkNumIndex(current_chunk_num)];
@@ -189,12 +189,14 @@ unsigned char dequeue_byte(unsigned char * q)
 // Out of memory stub, does not return
 void on_out_of_memory()
 {
+	printf("OUT OF MEMORY");
 	for (;;) {}
 }
 
 // Illegal operation stub, does not return
 void on_illegal_operation()
 {
+	printf("ILLEGAL OPERATION");
 	for (;;) {}
 }
 
