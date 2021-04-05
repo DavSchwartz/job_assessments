@@ -435,7 +435,7 @@ void init()
 int main(int argc, char **argv)
 {
 	// maximum queue usage
-	int max_queues = 64;
+	#define max_queues 64
 	int max_chunks = 21;
 	unsigned char* q[max_queues];
 	unsigned char great = 1;
