@@ -95,7 +95,7 @@ void destroy_queue(unsigned char * q)
 		unsigned char start_chunk_num = chunkNum(start_index);
 		unsigned char end_chunk_num = chunkNum(end_index);
 		unsigned char current_chunk_num = start_chunk_num;
-		// if free queue data
+		// free queue data
 		while ((current_chunk_num != end_chunk_num))
 		{
 			unsigned char next_chunk_num = data[nextChunkNumIndex(current_chunk_num)];
@@ -189,18 +189,12 @@ unsigned char dequeue_byte(unsigned char * q)
 // Out of memory stub, does not return
 void on_out_of_memory()
 {
-	// TODO remove later
-	printf("OUT OF MEMORY\n");
-	exit(1);
 	for (;;) {}
 }
 
 // Illegal operation stub, does not return
 void on_illegal_operation()
 {
-	// TODO remove later
-	printf("ILLEGAL OPERATION\n");
-	exit(1);
 	for (;;) {}
 }
 
@@ -414,6 +408,19 @@ unsigned short queueIndex(unsigned char queue_num)
 	return ALL_QUEUES_INDEX + (queue_num * QUEUE_LEN);
 }
 
+void overlap_chunks(unsigned char queue_num)
+{
+	unsigned short start_index = queueStartIndex(queue_num);
+	unsigned short end_index = queueEndIndex(queue_num);
+
+	// if no data exists in queue
+	if ((start_index == INVALID_12) || (end_index == INVALID_12))
+	{
+		
+	}
+}
+
+
 void init()
 {
 	// Make chunks point to next available chunk
@@ -438,6 +445,7 @@ void init()
 
 int main(int argc, char **argv)
 {
+	// maximum queue usage
 	int max_queues = 64;
 	int max_chunks = 21;
 	unsigned char* q[max_queues];
@@ -456,34 +464,35 @@ int main(int argc, char **argv)
 		for (int j = 0; j < max_chunks; j++)
 		{
 			unsigned char y = dequeue_byte(q[i]);
-			if (y != j && great) {great = 0;}
+			if ((y != j) && great) {great = 0;}
 		}
 		destroy_queue(q[i]);
 	}
-	if (great) {printf("MISSION ACCOMPLISHED\n");}
 
-	unsigned char* q0 = create_queue();
+	// maximum chunk usage
+	max_chunks = 231;
+	q[0] = create_queue();
 	unsigned char x = 0;
-	great = 1;
-	for (int i = 0; i < 219; i++)
+	for (int i = 0; i < max_chunks; i++)
 	{
-		enqueue_byte(q0, x);
+		enqueue_byte(q[0], x);
 		x = (x+1) % 256;
 	}
 	x = 0;
-	for (int i = 0; i < 50; i++)
+	for (int i = 0; i < max_chunks; i++)
 	{
-		unsigned char y = dequeue_byte(q0);
-		if (y != x && great) { great = 0; }
+		unsigned char y = dequeue_byte(q[0]);
+		if ((y != x) && great) { great = 0; }
 		x = (x+1) % 256;
 	}
-	printf("end\n");
-	destroy_queue(q0);
-	printf("destroyed\n");
+	destroy_queue(q[0]);
 
-	if (great) {printf("MISSION ACCOMPLISHED (AGAIN)\n");}
+	if (great)
+	{
+		printf("MISSION ACCOMPLISHED!\n");
+	}
 
-	/*
+	// example code from problem statement
 	unsigned char* q0 = create_queue();
 	enqueue_byte(q0, 0);
 	enqueue_byte(q0, 1);
@@ -502,7 +511,6 @@ int main(int argc, char **argv)
 	printf("%d ", dequeue_byte(q1));
 	printf("%d\n", dequeue_byte(q1));
 	destroy_queue(q1);
-	*/
 
 	return 0;
 }
