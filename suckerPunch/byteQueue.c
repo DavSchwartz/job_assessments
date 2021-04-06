@@ -63,7 +63,7 @@ queue_end_index = uint12 index of end of queue: 1.5 bytes
 avail_queue_index = uint16 index of available queue
 avail_chunk_index = uint16 index of available chunk
 
-init: uint8 initialization indicator: 0: uninitialized; 1: initialized
+init =  uint8 initialization indicator: 0: uninitialized; 1: initialized
 
 */
 static unsigned char data[DATA_LEN] = {0};
